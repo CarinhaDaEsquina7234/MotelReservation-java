@@ -12,7 +12,7 @@ public class Program {
 
 	public static void main(String[] args) throws ParseException {
 
-		//Bad Solution
+		// Very Bad Solution
 		
 		Locale.setDefault(Locale.US);
 		Scanner sc = new Scanner(System.in);
