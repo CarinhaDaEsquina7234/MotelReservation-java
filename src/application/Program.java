@@ -3,62 +3,71 @@ package application;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.InputMismatchException;
 import java.util.Locale;
 import java.util.Scanner;
 
 import model.entities.Reservation;
+import model.exceptions.DomainException;
 
 public class Program {
 
-	public static void main(String[] args) throws ParseException {
+	public static void main(String[] args) {
 
-		// Very Bad Solution
+		// Good Solution
 		
 		Locale.setDefault(Locale.US);
 		Scanner sc = new Scanner(System.in);
 		SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
 		
-		System.out.print("Room number: ");
-		int roomNumber = sc.nextInt();
+			try {
+				System.out.print("Room number: ");
+				int roomNumber = sc.nextInt();
+				
+				System.out.print("Check-in date (dd/MM/yyyy): ");
+				Date checkin = sdf.parse(sc.next());
+				
+				System.out.print("Check-out date (dd/MM/yyyy): ");
+				Date checkout = sdf.parse(sc.next());
 		
-		System.out.print("Check-in date (dd/MM/yyyy): ");
-		Date checkin = sdf.parse(sc.next());
+				Reservation reservation = new Reservation(roomNumber, checkin, checkout);
+				System.out.println("Reservation: " + reservation.toString());			
+				System.out.println();
+				
+				System.out.println("Enter data to update the reservation:");
+				
+				System.out.print("Check-in date (dd/MM/yyyy): ");
+				checkin = sdf.parse(sc.next());
+				
+				System.out.print("Check-out date (dd/MM/yyyy): ");
+				checkout = sdf.parse(sc.next());
+				
+				reservation.UpdateDates(checkin, checkout);
+		}
 		
-		System.out.print("Check-out date (dd/MM/yyyy): ");
-		Date checkout = sdf.parse(sc.next());
-		
-		if(!checkout.after(checkin))
+		catch (ParseException InvalidDateFormat)
 		{
-			System.out.println("Error in reservation: Check-out date must be after check-in date");
+			System.out.println("---------------------------------");
+			System.out.println("Invalid Date Format. Try again.");
+			System.out.println("---------------------------------");
 		}
-		
-		else {
-			Reservation reservation = new Reservation(roomNumber, checkin, checkout);
-			System.out.println("Reservation: " + reservation.toString());			
-			System.out.println();
 			
-			System.out.println("Enter data to update the reservation:");
-			
-			System.out.print("Check-in date (dd/MM/yyyy): ");
-			checkin = sdf.parse(sc.next());
-			
-			System.out.print("Check-out date (dd/MM/yyyy): ");
-			checkout = sdf.parse(sc.next());
-			
-			String error = reservation.UpdateDates(checkin, checkout);
-			
-			if(error != null)
+			catch (DomainException ErrorInArguments)
 			{
-				System.out.println("Error in reservation: " + error);
+				System.out.println("Error in reservation: " + ErrorInArguments.getMessage());
 			}
 			
-			else {
-				System.out.println("Reservation: " + reservation.toString());
+			catch (InputMismatchException InvalidCharacterEntered)
+			{
+				System.out.println("---------------------------------");
+				System.out.println("Attention!!! You entered an invalid character!!!");
+				System.out.println("---------------------------------");
 			}
 			
-		}
-		
-		
+			catch (RuntimeException e)
+			{
+				System.out.println("Unexpected error!!!");
+			}
 		
 		sc.close();
 		
